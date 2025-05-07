@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, DateTimeField, SubmitField
+from wtforms import StringField, TextAreaField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional
+from wtforms.fields import DateTimeLocalField
 from datetime import datetime
 
 class TaskForm(FlaskForm):
@@ -11,7 +12,7 @@ class TaskForm(FlaskForm):
         ('medium', 'Medium'),
         ('high', 'High')
     ], default='medium')
-    due_date = DateTimeField('Due Date', format='%Y-%m-%d %H:%M', validators=[Optional()])
+    due_date = DateTimeLocalField('Due Date', format='%Y-%m-%dT%H:%M', validators=[Optional()])
     submit = SubmitField('Create Task')
 
 class TaskEditForm(FlaskForm):
@@ -27,7 +28,7 @@ class TaskEditForm(FlaskForm):
         ('medium', 'Medium'),
         ('high', 'High')
     ])
-    due_date = DateTimeField('Due Date', format='%Y-%m-%d %H:%M', validators=[Optional()])
+    due_date = DateTimeLocalField('Due Date', format='%Y-%m-%dT%H:%M', validators=[Optional()])
     submit = SubmitField('Update Task')
 
 class CommentForm(FlaskForm):

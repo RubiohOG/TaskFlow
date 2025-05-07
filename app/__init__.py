@@ -17,7 +17,7 @@ def create_app():
     app.config['REDIS_PASSWORD'] = os.environ.get('REDIS_PASSWORD', None)
     
     # File upload configuration
-    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(app.instance_path), 'uploads')
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
     
     # Ensure upload directory exists

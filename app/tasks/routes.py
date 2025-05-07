@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, abort, current_app, jsonify
+from flask import render_template, flash, redirect, url_for, request, abort, current_app, jsonify, send_from_directory
 from flask_login import current_user, login_required
 from app.tasks import bp
 from app.tasks.forms import TaskForm, TaskEditForm, CommentForm
@@ -6,7 +6,7 @@ from app.models import Task, Project, Comment, User, Attachment
 from app.persistence import (
     get_project_by_id, save_task, get_task_by_id, delete_task, 
     get_user_by_username, save_comment, get_comments_by_task,
-    save_attachment, get_attachments_by_task
+    save_attachment, get_attachments_by_task, get_attachment_by_id, delete_object_by_id
 )
 import os
 from werkzeug.utils import secure_filename
@@ -58,13 +58,27 @@ def view_task(task_id):
     comments = get_comments_by_task(task_id)
     attachments = get_attachments_by_task(task_id)
     
+    # Enriquecer comentarios con el nombre de usuario
+    from app.persistence import get_user_by_id
+    for comment in comments:
+        user = get_user_by_id(comment.user_id)
+        comment.user_name = user.username if user else 'User'
+    
+    assignee_name = None
+    if task.assignee_id:
+        from app.persistence import get_user_by_id
+        assignee = get_user_by_id(task.assignee_id)
+        if assignee:
+            assignee_name = assignee.username
+    
     return render_template('tasks/view_task.html',
                          title=task.title,
                          task=task,
                          project=project,
                          comments=comments,
                          attachments=attachments,
-                         comment_form=comment_form)
+                         comment_form=comment_form,
+                         assignee_name=assignee_name)
 
 @bp.route('/tasks/<task_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -248,7 +262,7 @@ def upload_file(task_id):
             file.save(file_path)
             
             attachment = Attachment(
-                filename=filename,
+                filename=unique_filename,
                 file_path=file_path,
                 task_id=task.id,
                 user_id=current_user.id
@@ -305,4 +319,41 @@ def change_task_status(task_id, status):
             })
         flash(f'Task status updated to {status.replace("_", " ")}', 'success')
     
-    return redirect(url_for('tasks.view_task', task_id=task.id)) 
+    return redirect(url_for('tasks.view_task', task_id=task.id))
+
+@bp.route('/tasks/attachment/<filename>')
+@login_required
+def download_attachment(filename):
+    upload_folder = current_app.config['UPLOAD_FOLDER']
+    try:
+        return send_from_directory(upload_folder, filename, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
+
+@bp.route('/tasks/attachment/<attachment_id>/delete', methods=['POST'])
+@login_required
+def delete_attachment(attachment_id):
+    from app.persistence import get_attachments_by_task, save_attachment
+    from app.models import Attachment
+    import pickle
+    s = current_app.extensions['sirope'] if 'sirope' in current_app.extensions else None
+    if not s:
+        import sirope
+        s = sirope.Sirope()
+    # Buscar el adjunto en Redis
+    serialized = s._redis.hget("Attachment", str(attachment_id))
+    task_id = request.form.get('task_id')
+    if serialized:
+        attachment = pickle.loads(serialized)
+        # Eliminar archivo físico si existe
+        try:
+            if os.path.exists(attachment.file_path):
+                os.remove(attachment.file_path)
+        except Exception as e:
+            current_app.logger.warning(f"No se pudo eliminar el archivo físico: {e}")
+        # Eliminar registro en Redis
+        s._redis.hdel("Attachment", str(attachment_id))
+        flash('Attachment deleted successfully!', 'success')
+    else:
+        flash('Attachment not found.', 'warning')
+    return redirect(url_for('tasks.view_task', task_id=task_id)) 

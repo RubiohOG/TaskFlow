@@ -798,15 +798,26 @@ def get_comments_by_task(task_id):
 
 # Funciones de persistencia para adjuntos
 def save_attachment(attachment):
-    """Guardar un adjunto en la base de datos."""
+    """Guardar un adjunto en la base de datos (Redis)."""
     s = get_sirope()
-    oid = s.save(attachment)
-    return oid
+    try:
+        serialized = pickle.dumps(attachment)
+        s._redis.hset("Attachment", str(attachment.id), serialized)
+        return attachment.id
+    except Exception as e:
+        current_app.logger.error(f"Error al guardar adjunto: {str(e)}")
+        return None
 
 def get_attachments_by_task(task_id):
-    """Obtener adjuntos por ID de la tarea."""
+    """Obtener adjuntos por ID de la tarea (filtrado manual desde Redis)."""
     s = get_sirope()
-    return list(s.filter(Attachment, lambda a: a.task_id == task_id))
+    task_id_str = str(task_id)
+    attachments = []
+    for k in s._redis.hkeys('Attachment'):
+        a = pickle.loads(s._redis.hget('Attachment', k))
+        if str(a.task_id) == task_id_str:
+            attachments.append(a)
+    return attachments
 
 # Funciones auxiliares para contar relaciones
 def count_project_tasks(project_id):
@@ -1188,4 +1199,12 @@ def list_all_tasks_in_redis():
             current_app.logger.info(f"Recuperadas {len(backup_tasks)} tareas desde backups como último recurso")
             return [t for t in backup_tasks if str(t.id) not in _deleted_task_ids]
         except:
-            return [] 
+            return []
+
+def get_attachment_by_id(attachment_id):
+    """Obtener un adjunto por su ID."""
+    s = get_sirope()
+    try:
+        return s.load(attachment_id)
+    except Exception:
+        return None 
