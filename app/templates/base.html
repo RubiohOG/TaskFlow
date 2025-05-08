@@ -10,8 +10,8 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">Taskflow</a>
+        <div class="container-fluid">
+            <a class="navbar-brand me-4 pe-1" href="{{ url_for('main.index') }}">Taskflow</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -19,20 +19,29 @@
                 <ul class="navbar-nav me-auto">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Dashboard</a>
+                        <a class="nav-link" href="{{ url_for('main.index') }}" class="text-decoration-none">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('projects.projects') }}">Projects</a>
+                        <a class="nav-link" href="{{ url_for('projects.projects') }}" class="text-decoration-none">Projects</a>
                     </li>
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <span class="nav-link">Welcome, {{ current_user.username }}</span>
+                        <span class="nav-link me-3">
+                            <i class="fa fa-user me-1"></i>{{ current_user.username }}
+                        </span>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+                        <button id="themeToggleBtn" class="btn btn-link nav-link" onclick="toggleTheme()" title="Toggle dark mode">
+                            <i id="themeIcon" class="fa fa-moon"></i>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}" title="Logout">
+                            <i class="fa fa-sign-out-alt"></i>
+                        </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -48,22 +57,61 @@
     </nav>
 
     <main class="container mt-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div aria-live="polite" aria-atomic="true" class="position-relative">
+            <div id="toast-container" class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 3000;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="toast align-items-center text-bg-{{ category if category != 'message' else 'info' }} border-0 shadow fade show mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3500">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            {{ message }}
+                        </div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
         </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
 
         {% block content %}{% endblock %}
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+    // Modo claro/oscuro
+    function setTheme(dark) {
+        if (dark) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeIcon').className = 'fa fa-sun';
+        } else {
+            document.body.classList.remove('dark-mode');
+            document.getElementById('themeIcon').className = 'fa fa-moon';
+        }
+    }
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', isDark ? '1' : '0');
+        setTheme(isDark);
+    }
+    // Al cargar la página, aplica el tema guardado
+    (function() {
+        const dark = localStorage.getItem('darkMode') === '1';
+        setTheme(dark);
+    })();
+
+    // Inicializar toasts de Bootstrap automáticamente
+    window.addEventListener('DOMContentLoaded', function() {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        toastElList.forEach(function(toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        });
+    });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html> 
