@@ -210,4 +210,16 @@ td a:hover, td a:focus, p a:hover, p a:focus {
 .toast.text-bg-info .btn-close,
 .toast.text-bg-light .btn-close {
     filter: none;
+}
+
+.footer {
+    /*border-top: 1px solid #e5e5e5;*/
+    font-size: 1rem;
+    letter-spacing: 0.02em;
+    margin-top: 1.5rem !important;
+}
+body.dark-mode .footer, .footer.dark-footer {
+    background-color: #181a1b !important;
+    color: #b0b3b8 !important;
+    /*border-top: 1px solid #23272b !important;*/
 } 
