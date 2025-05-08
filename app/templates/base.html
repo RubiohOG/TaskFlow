@@ -29,9 +29,9 @@
                 <ul class="navbar-nav">
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <span class="nav-link me-3">
+                        <a class="nav-link me-3" href="{{ url_for('auth.edit_profile') }}">
                             <i class="fa fa-user me-1"></i>{{ current_user.username }}
-                        </span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <button id="themeToggleBtn" class="btn btn-link nav-link" onclick="toggleTheme()" title="Toggle dark mode">

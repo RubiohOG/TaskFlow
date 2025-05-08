@@ -1,10 +1,12 @@
 from flask import render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 from urllib.parse import urlparse
+from werkzeug.utils import secure_filename
 from app.auth import bp
-from app.auth.forms import LoginForm, RegistrationForm
+from app.auth.forms import LoginForm, RegistrationForm, EditProfileForm
 from app.models import User
-from app.persistence import get_user_by_username, get_user_by_email, save_user
+from app.persistence import get_user_by_username, get_user_by_email, save_user, get_user_by_id
+import os
 
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -48,4 +50,34 @@ def register():
         save_user(user)
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('auth.login'))
-    return render_template('auth/register.html', title='Register', form=form) 
+    return render_template('auth/register.html', title='Register', form=form)
+
+@bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        user = get_user_by_id(current_user.id)
+        user.email = form.email.data
+        user.company = form.company.data
+        # Manejo de foto de perfil
+        if form.profile_picture.data:
+            pic = form.profile_picture.data
+            filename = secure_filename(pic.filename)
+            # Guardar en app/static/profile_pics
+            pic_folder = os.path.join(os.path.dirname(__file__), '..', 'static', 'profile_pics')
+            pic_folder = os.path.abspath(pic_folder)
+            os.makedirs(pic_folder, exist_ok=True)
+            pic_path = os.path.join(pic_folder, filename)
+            pic.save(pic_path)
+            user.profile_picture = '/static/profile_pics/' + filename
+        # Cambio de contraseña
+        if form.new_password.data:
+            user.set_password(form.new_password.data)
+        save_user(user)
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('auth.edit_profile'))
+    else:
+        form.email.data = current_user.email
+        form.company.data = getattr(current_user, 'company', '')
+    return render_template('auth/edit_profile.html', form=form, user=current_user) 

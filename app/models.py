@@ -4,13 +4,15 @@ from flask_login import UserMixin
 import uuid
 
 class User(UserMixin):
-    def __init__(self, username, email, password=None, role='user'):
+    def __init__(self, username, email, password=None, role='user', company=None, profile_picture=None):
         self.id = str(uuid.uuid4())  # Usar UUID como identificador único
         self.username = username
         self.email = email
         self.password_hash = None if password is None else generate_password_hash(password)
         self.role = role
         self.created_at = datetime.utcnow()
+        self.company = company
+        self.profile_picture = profile_picture
         
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
