@@ -153,8 +153,4 @@ Taskflow/
 
 ## Licencia
 
-Este proyecto es educativo y puede ser adaptado libremente para fines académicos.
-
----
-
-¿Tienes dudas o sugerencias? ¡No dudes en abrir un issue o contribuir! 
+Este proyecto es educativo y puede ser adaptado  libremente para fines académicos.
