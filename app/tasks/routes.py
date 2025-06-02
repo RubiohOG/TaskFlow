@@ -63,6 +63,7 @@ def view_task(task_id):
     for comment in comments:
         user = get_user_by_id(comment.user_id)
         comment.user_name = user.username if user else 'User'
+        comment.user_profile_picture = getattr(user, "profile_picture", None) or '/static/profile_pics/default.png'
     
     assignee_name = None
     if task.assignee_id:

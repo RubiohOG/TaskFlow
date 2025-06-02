@@ -10,4 +10,4 @@ app = create_app()
 if __name__ == '__main__':
     # Decidir modo debug basado en variables de entorno
     debug_mode = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't')
-    app.run(debug=debug_mode) 
+    app.run(debug=debug_mode)

@@ -63,8 +63,11 @@
                     <div class="comments-list">
                         {% for comment in comments %}
                         <div class="comment mb-3 p-3 border-bottom">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="mb-1">{{ comment.user_name if comment.user_name is defined else 'User' }}</h6>
+                            <div class="d-flex justify-content-between mb-2">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ comment.user_profile_picture }}" alt="Profile Picture" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover; border: 1.5px solid #111111;">
+                                    <h6 class="mb-1">{{ comment.user_name if comment.user_name is defined else 'User' }}</h6>
+                                </div>
                                 <small>{{ comment.created_at.strftime('%Y-%m-%d %H:%M') if comment.created_at is defined else '' }}</small>
                             </div>
                             <p class="mb-0">{{ comment.content }}</p>
