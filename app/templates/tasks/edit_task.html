@@ -47,9 +47,11 @@
                         <span class="text-danger">{{ error }}</span>
                         {% endfor %}
                     </div>
-                    <div class="d-grid gap-2">
-                        {{ form.submit(class="btn btn-primary") }}
-                        <a href="{{ url_for('tasks.view_task', task_id=task.id) }}" class="btn btn-secondary">Cancel</a>
+                    <div class="text-center mt-3">
+                        <div style="width: 150px; margin: 0 auto;">
+                            {{ form.submit(class="btn btn-primary w-100 mb-2") }}
+                            <a href="{{ url_for('tasks.view_task', task_id=task.id) }}" class="btn btn-secondary w-100">Cancel</a>
+                        </div>
                     </div>
                 </form>
             </div>

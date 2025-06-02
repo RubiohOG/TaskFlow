@@ -8,6 +8,6 @@ load_dotenv()
 app = create_app()
 
 if __name__ == '__main__':
-    # Decidir modo debug basado en variables de entorno
-    debug_mode = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't')
+    # debug_mode = os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't')
+    debug_mode = False
     app.run(debug=debug_mode)
