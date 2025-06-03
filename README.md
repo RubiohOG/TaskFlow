@@ -2,6 +2,8 @@
 
 TaskFlow es una aplicación web desarrollada con **Flask** para la gestión colaborativa de proyectos y tareas, con una interfaz moderna, soporte para adjuntos, comentarios, perfiles de usuario y modo claro/oscuro.
 
+Creada con el objetivo de facilitar la gestión de proyectos y tareas entre alumnos de distintas nacionalidades, esta aplicación responde a las dificultades que pueden surgir al utilizar otros tipos de software universitario, ya sea por barreras idiomáticas o por interfaces poco intuitivas. Además, su diseño sencillo y accesible la hace perfectamente aplicable en empresas de cualquier sector que deseen gestionar sus proyectos de manera eficiente y con una interfaz fácil de usar.
+
 ---
 
 ## Características principales
@@ -26,6 +28,54 @@ TaskFlow es una aplicación web desarrollada con **Flask** para la gestión cola
 - **Almacenamiento:** Redis (a través de Sirope) usando serialización Pickle.
 - **Gestión de sesiones:** Flask-Login.
 - **Organización:** Blueprints de Flask para modularidad y escalabilidad.
+
+---
+
+## Guía de Funcionalidades de Taskflow
+
+### 1. **Registro y Acceso de Usuarios**
+- **Registro:**  
+  Los nuevos usuarios pueden crear una cuenta proporcionando un nombre de usuario, correo electrónico y contraseña. El sistema valida que el nombre y el correo no estén ya registrados.
+- **Inicio de sesión:**  
+  Los usuarios registrados pueden acceder introduciendo su nombre de usuario y contraseña. Existe la opción de recordar la sesión.
+
+### 2. **Gestión y Configuración del Perfil**
+- **Edición de perfil:**  
+  Cada usuario puede acceder a su perfil para modificar su correo electrónico, empresa (opcional) y cambiar su foto de perfil.  
+- **Cambio de contraseña:**  
+  Desde la misma sección de perfil, el usuario puede actualizar su contraseña de forma segura.
+- **Foto de perfil:**  
+  Se puede subir una imagen personalizada, que se mostrará en la barra superior y en los comentarios.
+
+### 3. **Creación y Gestión de Proyectos**
+- **Crear proyecto:**  
+  Los usuarios pueden crear nuevos proyectos, asignándoles un título y una descripción.
+- **Gestión de miembros:**  
+  El creador del proyecto puede añadir o eliminar miembros, permitiendo la colaboración entre varios usuarios.
+- **Edición y eliminación:**  
+  Los proyectos pueden ser editados o eliminados por su propietario.
+
+### 4. **Gestión de Tareas**
+- **Crear tarea:**  
+  Dentro de cada proyecto, se pueden crear tareas especificando título, descripción, prioridad, estado y fecha de vencimiento.
+- **Asignación:**  
+  Las tareas pueden ser asignadas a cualquier miembro del proyecto.
+- **Edición y actualización:**  
+  Se pueden modificar los detalles de la tarea, cambiar su estado (por ejemplo, de “En progreso” a “Hecho”) y actualizar la información relevante.
+- **Eliminación:**  
+  Las tareas pueden ser eliminadas si ya no son necesarias.
+
+### 5. **Comentarios y Colaboración**
+- **Añadir comentarios:**  
+  Los usuarios pueden comentar en cada tarea para facilitar la comunicación y el seguimiento del trabajo.
+- **Visualización:**  
+  Los comentarios muestran la foto y el nombre del usuario que los escribió, junto con la fecha y hora.
+
+### 6. **Gestión de Archivos Adjuntos**
+- **Subir archivos:**  
+  Es posible adjuntar archivos a cada tarea, permitiendo compartir documentos, imágenes u otros recursos relevantes.
+- **Descargar y eliminar:**  
+  Los archivos pueden ser descargados por los miembros del proyecto o eliminados si ya no son necesarios.
 
 ---
 
@@ -153,4 +203,4 @@ Taskflow/
 
 ## Licencia
 
-Este proyecto es educativo y puede ser adaptado  libremente para fines académicos.
+Este proyecto es educativo y puede ser adaptado libremente, únicamente para fines académicos.
